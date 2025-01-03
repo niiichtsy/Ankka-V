@@ -8,6 +8,8 @@ module instruction_fetch_unit (
     input resetn
 );
 
+  reg [31:0] register_bank  [0:31];
+
   // Clock the incoming instruction in
   always_ff @(posedge clk) begin
     if (!resetn) begin
@@ -25,6 +27,11 @@ module instruction_fetch_unit (
         done <= 1'b0;
       end
     end
+  end
+
+  initial begin
+    $dumpvars(0, instruction_fetch_unit);
+    $dumpfile("dump.vcd");
   end
 
 endmodule

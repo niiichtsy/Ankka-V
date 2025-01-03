@@ -1,8 +1,10 @@
 `include "risc_v_opcodes.sv"
 
 module instruction_decode_unit (
-    input logic [31:0] instruction,
-    input aresetn
+    output logic alu_in1,
+    output logic alu_in2,
+    input [31:0] instruction,
+    input resetn
 );
 
   // Wires indicating decoded instructions
@@ -32,10 +34,21 @@ module instruction_decode_unit (
   wire [31:0] Bimm = {{20{instruction[31]}}, instruction[7], instruction[30:25], instruction[11:8], 1'b0};
   wire [31:0] Jimm = {{12{instruction[31]}}, instruction[19:12], instruction[20], instruction[30:21], 1'b0};
 
+
+  reg  [31:0] alu_in1;
+  reg  [31:0] alu_in2;
+
   always_comb begin
-    if (!aresetn) begin
+    if (!resetn) begin
     end else begin
+      alu_in1 <= register_bank[rs1];
+      alu_in2 <= register_bank[rs2];
     end
+  end
+
+  initial begin
+    $dumpvars(0, instruction_decode_unit);
+    $dumpfile("dump.vcd");
   end
 
 endmodule
