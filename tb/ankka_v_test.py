@@ -19,11 +19,11 @@ async def setup_clocks(dut):
 
 async def reset_dut(dut):
     dut.resetn.value = 1
-    await Timer(2, units="ns")
+    await Timer(CLK_PERIOD * 2, units="ns")
     dut.resetn.value = 0
-    await Timer(2, units="ns")
+    await Timer(CLK_PERIOD * 2, units="ns")
     dut.resetn.value = 1
-    await Timer(2, units="ns")
+    await Timer(CLK_PERIOD * 2, units="ns")
 
 
 @cocotb.test()
@@ -32,21 +32,22 @@ async def ankka_v_test(dut):
     await Timer(CLK_PERIOD * 4, units="ns")
     await reset_dut(dut)
     await Timer(CLK_PERIOD * 10, units="ns")
-    dut.instruction_in.value = 0b00000000000000000000000010110011
-    dut.read.value = 1
-    await Timer(CLK_PERIOD * 10, units="ns")
-    dut.instruction_in.value = 0b00000000000100001000000010010011
-    dut.read.value = 1
-    await Timer(CLK_PERIOD * 10, units="ns")
-    dut.instruction_in.value = 0b00000000000000001010000100000011
-    dut.read.value = 1
-    await Timer(CLK_PERIOD * 10, units="ns")
-    dut.instruction_in.value = 0b0000000000100010010000000100011
-    dut.read.value = 1
-    await Timer(CLK_PERIOD * 10, units="ns")
-    dut.read.value = 1
-    dut.instruction_in.value = 0b00000000000100000000000001110011
-    await Timer(CLK_PERIOD * 10, units="ns")
+
+    instructions = [
+        0b00000000000000000000000010110011,
+        0b00000000000100001000000010010011,
+        0b00000000000000001010000100000011,
+        0b0000000000100010010000000100011,
+        0b00000000000100000000000001110011,
+    ]
+
+    for instruction in instructions:
+        dut.instruction_in.value = instruction
+        await RisingEdge(dut.clk)
+        dut.read.value = 1
+        await RisingEdge(dut.clk)
+        dut.read.value = 0
+        await Timer(CLK_PERIOD * 10, units="ns")
 
     assert dut.resetn.value == 1
 

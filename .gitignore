@@ -1,2 +1,8 @@
 .nvim
 .svlangserver/
+
+tb/__pycache__/
+tb/sim_build
+
+*.vcd
+results.xml

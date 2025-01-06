@@ -1,14 +1,12 @@
 module instruction_fetch_unit (
-    output logic [31:0] program_counter,
     output logic [31:0] instruction_out,
     output logic done,
     input [31:0] instruction_in,
     input read,
-    input clk,
-    input resetn
+    input resetn,
+    input clk
 );
-
-  reg [31:0] register_bank  [0:31];
+  reg [31:0] program_counter;
 
   // Clock the incoming instruction in
   always_ff @(posedge clk) begin
@@ -22,7 +20,7 @@ module instruction_fetch_unit (
         program_counter <= program_counter + 1'b1;
         done <= 1'b1;
       end else begin
-        instruction_out <= 'h00;
+        instruction_out <= instruction_in;
         program_counter <= program_counter;
         done <= 1'b0;
       end
